@@ -1,0 +1,7 @@
+[server]
+address = "127.0.0.1"
+port = 8080
+
+[database]
+url = "postgres://postgres@localhost/retro-game-ng"
+pool_size = 4
