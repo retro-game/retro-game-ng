@@ -5,7 +5,6 @@ use crate::view;
 use crate::AppData;
 use actix_web::http::header::LOCATION;
 use actix_web::{get, post, web, Error, HttpResponse};
-use futures::Future;
 use serde::Deserialize;
 
 #[get("/join")]
@@ -24,11 +23,11 @@ pub struct JoinForm {
 }
 
 #[post("/join")]
-pub fn post(
+pub async fn post(
     app_data: web::Data<AppData>,
     form: web::Form<JoinForm>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
-    block(move || {
+) -> Result<HttpResponse, Error> {
+    let error_flags = block(move || {
         join::join(
             app_data,
             &form.email,
@@ -37,14 +36,13 @@ pub fn post(
             &form.password_confirm,
         )
     })
-    .and_then(|error_flags| {
-        let resp = if !error_flags.is_empty() {
-            let body = view::join(error_flags);
-            HttpResponse::Ok().body(body)
-        } else {
-            let location = "/?joined";
-            HttpResponse::Found().header(LOCATION, location).finish()
-        };
-        Ok(resp)
-    })
+    .await?;
+    let resp = if !error_flags.is_empty() {
+        let body = view::join(error_flags);
+        HttpResponse::Ok().body(body)
+    } else {
+        let location = "/?joined";
+        HttpResponse::Found().header(LOCATION, location).finish()
+    };
+    Ok(resp)
 }

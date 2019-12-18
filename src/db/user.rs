@@ -3,22 +3,14 @@ use diesel::dsl::{exists, select};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::{sql_function, sql_types};
+use uuid::Uuid;
 
 sql_function!(fn lower(x: sql_types::Text) -> sql_types::Text);
-
-/*
-#[derive(Queryable)]
-pub struct User {
-    pub id: i64,
-    pub name: String,
-    pub email: String,
-    pub password: String,
-}
-*/
 
 #[derive(Insertable)]
 #[table_name = "users"]
 pub struct NewUser<'a> {
+    pub id: &'a Uuid,
     pub name: &'a str,
     pub email: &'a str,
     pub password: &'a str,
@@ -48,10 +40,13 @@ pub fn exists_by_name_ignore_case(conn: &PgConnection, name: &str) -> bool {
     .unwrap()
 }
 
-pub fn find_password_by_email_ignore_case(conn: &PgConnection, email: &str) -> Option<String> {
+pub fn find_id_and_password_by_email_ignore_case(
+    conn: &PgConnection,
+    email: &str,
+) -> Option<(Uuid, String)> {
     users::table
         .filter(lower(users::email).eq(lower(email)))
-        .select(users::password)
+        .select((users::id, users::password))
         .first(conn)
         .ok()
 }

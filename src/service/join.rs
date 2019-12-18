@@ -1,4 +1,4 @@
-use crate::model::user;
+use crate::db::user;
 use crate::util::password::hash;
 use crate::validation::{email, password, user_name};
 use crate::AppData;
@@ -6,6 +6,7 @@ use actix_web::web;
 use bitflags::bitflags;
 use diesel::pg::PgConnection;
 use std::convert::From;
+use uuid::Uuid;
 
 bitflags! {
     pub struct ErrorFlags : u32 {
@@ -103,6 +104,7 @@ pub fn join(
     }
 
     let new_user = user::NewUser {
+        id: &Uuid::new_v4(),
         name,
         email,
         password: &hash(password),

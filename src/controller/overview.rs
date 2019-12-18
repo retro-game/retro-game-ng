@@ -1,13 +1,19 @@
+use crate::context::Context;
+use crate::controller::util::assure_body_access;
 use crate::view;
-use actix_web::{get, web, HttpResponse};
+use actix_web::web::Query;
+use actix_web::{get, HttpResponse, Result};
 use serde::Deserialize;
+use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct OverviewQuery {
-    pub body: i64,
+    pub body: Uuid,
 }
 
 #[get("/overview")]
-pub fn get(query: web::Query<OverviewQuery>) -> HttpResponse {
-    HttpResponse::Ok().body(view::overview())
+pub async fn get(query: Query<OverviewQuery>, context: Context) -> Result<HttpResponse> {
+    assure_body_access(&context, query.body)?;
+
+    Ok(HttpResponse::Ok().body(view::overview(&context)))
 }

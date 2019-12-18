@@ -1,1 +1,3 @@
-pub mod user;
+mod body;
+
+pub use body::*;

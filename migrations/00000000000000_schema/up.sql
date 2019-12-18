@@ -1,7 +1,7 @@
 -- Users
 
 create table users (
-    id bigserial primary key,
+    id uuid primary key,
     name text not null,
     email text not null,
     password text not null
@@ -15,8 +15,8 @@ create unique index users_lower_email_idx
 -- Bodies
 
 create table bodies (
-    id bigserial primary key,
-    user_id bigint references users,
+    id uuid primary key,
+    user_id uuid references users,
     name text not null,
     galaxy int not null,
     system int not null,
@@ -31,10 +31,10 @@ create table bodies (
     temperature int not null,
     type int not null,
     image int not null,
-    buildings int[] not null,
-    units int[] not null,
-    building_queue int[] not null,
-    shipyard_queue int[] not null,
+    buildings int[] not null default '{}',
+    units int[] not null default '{}',
+    building_queue int[] not null default '{}',
+    shipyard_queue int[] not null default '{}',
     unique (galaxy, system, position, kind)
 );
 

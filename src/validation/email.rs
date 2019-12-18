@@ -99,9 +99,7 @@ mod tests {
         assert!(validate("email@[2001:dB8::1]").is_err());
         assert!(validate("email@[2001:dB8:0:0:0:0:0:1]").is_err());
         assert!(validate("email@[::fffF:127.0.0.1]").is_err());
-        assert!(
-            validate("test@domain.with.idn.tld.उदाहरण.परीक्षा").is_err()
-        );
+        assert!(validate("test@domain.with.idn.tld.उदाहरण.परीक्षा").is_err());
         assert!(validate(r#""test@test"@example.com"#).is_err());
         assert!(validate("abc@bar").is_ok());
         assert!(validate("email@127.0.0.1").is_ok());

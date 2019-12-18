@@ -3,44 +3,23 @@
 #[macro_use]
 extern crate diesel;
 
+use actix_session::CookieSession;
+use actix_web::cookie::SameSite;
 use actix_web::{App, HttpServer};
 use diesel::pg::PgConnection;
 use diesel::r2d2::{self, ConnectionManager};
-use serde::Deserialize;
-use std::fs::read_to_string;
+use log::info;
 
+mod config;
+mod context;
 mod controller;
+mod db;
 mod model;
 mod schema;
 mod service;
 mod util;
 mod validation;
 mod view;
-
-#[derive(Deserialize)]
-struct Config {
-    server: ServerConfig,
-    database: DatabaseConfig,
-}
-
-#[derive(Deserialize)]
-struct ServerConfig {
-    address: String,
-    port: u16,
-}
-
-#[derive(Deserialize)]
-struct DatabaseConfig {
-    url: String,
-    pool_size: Option<u32>,
-}
-
-static CONFIG_PATH: &str = "config.toml";
-
-fn load_config() -> Config {
-    let content = read_to_string(CONFIG_PATH).unwrap();
-    toml::from_str(&content).unwrap()
-}
 
 pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -56,19 +35,34 @@ fn create_db_pool(url: &str, size: u32) -> DbPool {
         .expect("Failed to create db pool")
 }
 
-fn main() -> std::io::Result<()> {
-    let config = load_config();
+fn make_session_middleware() -> CookieSession {
+    // FIXME: Load the key from config. Currently sessions can be signed by anyone.
+    CookieSession::signed(&[0u8; 32])
+        .name("s")
+        .http_only(true)
+        .same_site(SameSite::Lax)
+}
 
-    println!("Creating db pool");
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
+    env_logger::init();
+
+    let config = config::load(None);
+
+    info!("Creating database pool");
     let size = config.database.pool_size.unwrap_or(1);
     let db_pool = create_db_pool(&config.database.url, size);
 
-    println!("Creating server");
+    info!("Creating server");
     HttpServer::new(move || {
         App::new()
             .data(AppData {
                 db_pool: db_pool.clone(),
             })
+            .wrap(context::ContextTransform)
+            .wrap(make_session_middleware())
+            .service(controller::create_homeworld::get)
+            .service(controller::create_homeworld::post)
             .service(controller::home::get)
             .service(controller::join::get)
             .service(controller::join::post)
@@ -76,5 +70,6 @@ fn main() -> std::io::Result<()> {
             .service(controller::sign_in::post)
     })
     .bind(format!("{}:{}", config.server.address, config.server.port))?
-    .run()
+    .start()
+    .await
 }
