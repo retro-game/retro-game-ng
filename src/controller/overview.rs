@@ -13,7 +13,8 @@ pub struct OverviewQuery {
 
 #[get("/overview")]
 pub async fn get(query: Query<OverviewQuery>, context: Context) -> Result<HttpResponse> {
-    assure_body_access(&context, query.body)?;
+    let body_id = query.body;
+    assure_body_access(&context, body_id)?;
 
-    Ok(HttpResponse::Ok().body(view::overview(&context)))
+    Ok(HttpResponse::Ok().body(view::overview(&context, body_id)))
 }
