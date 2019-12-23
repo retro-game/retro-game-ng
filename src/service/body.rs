@@ -30,7 +30,7 @@ pub fn create_homeworld(
     let now = date_time::now();
     let temperature = model::generate_body_temperature(position);
     let type_ = model::generate_planet_type(position) as i32;
-    let image = (rand::random::<u32>() % 11) as i32;
+    let image = (rand::random::<u32>() % 10) as i32 + 1;
     let new_body = body::NewBody {
         id: &body_id,
         user_id: &user_id,

@@ -1,11 +1,6 @@
 use crate::service::galaxy::Slot;
 use maud::{html, DOCTYPE};
 
-// FIXME: This does not work, we need BodyType.
-fn make_body_image_url(type_: i32, image: i32) -> String {
-    format!("/static/skin/EpicBlue/bodies/{}_{}.jpg", type_, image)
-}
-
 pub fn create_homeworld(slots: &[Option<Slot>]) -> String {
     let markup = html! {
         (DOCTYPE)
@@ -32,7 +27,7 @@ pub fn create_homeworld(slots: &[Option<Slot>]) -> String {
                                     td { (i) }
                                     @if let Some(slot) = &slots[i - 1] {
                                         td {
-                                            img src=(make_body_image_url(slot.type_, slot.image)) width="30" height="30";
+                                            img src={ "/static/skins/EpicBlue/bodies/" (slot.type_) "_" (slot.image) ".jpg" } width="30" height="30";
                                         }
                                         td { (slot.name) }
                                     } @else {

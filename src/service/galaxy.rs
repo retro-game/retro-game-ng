@@ -1,11 +1,13 @@
 use crate::db::body;
+use crate::model::BodyType;
 use crate::AppData;
 use actix_web::web;
+use num_traits::FromPrimitive;
 
 #[derive(Clone)]
 pub struct Slot {
     pub name: String,
-    pub type_: i32,
+    pub type_: BodyType,
     pub image: i32,
 }
 
@@ -20,10 +22,13 @@ pub fn get_system(app_data: web::Data<AppData>, galaxy: i32, system: i32) -> Vec
         let pos = body.position;
         debug_assert!(pos >= 1 && pos <= 15);
         let index = (pos - 1) as usize;
+
+        let type_ = FromPrimitive::from_i32(body.type_).unwrap();
+
         debug_assert!(slots[index].is_none());
         slots[index] = Some(Slot {
             name: body.name,
-            type_: body.type_,
+            type_,
             image: body.image,
         });
     }

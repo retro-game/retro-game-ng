@@ -43,7 +43,7 @@ pub fn overview(context: &Context, body_id: Uuid) -> String {
             tr {
                 td {}
                 td class="overview-body" colspan="2" {
-                    img src={ "/static/skins/EpicBlue/bodies/JUNGLE_1.jpg" } width="200" height="200";
+                    img src={ "/static/skins/EpicBlue/bodies/" (body.type_) "_" (body.image) ".jpg" } width="200" height="200";
                     span { "free" }
                 }
                 td {
@@ -52,7 +52,7 @@ pub fn overview(context: &Context, body_id: Uuid) -> String {
                             div class="overview-body" {
                                 span { (body.name) }
                                 a href={ "/overview?body=" (id) } {
-                                    img src={ "/static/skins/EpicBlue/bodies/JUNGLE_1.jpg" } width="88" height="88";
+                                    img src={ "/static/skins/EpicBlue/bodies/" (body.type_) "_" (body.image) ".jpg" } width="88" height="88";
                                 }
                                 span { "free" }
                             }
@@ -62,13 +62,13 @@ pub fn overview(context: &Context, body_id: Uuid) -> String {
             }
             tr {
                 td { "Diameter" }
-                td colspan="3" { "13,420 km (42 / 180 fields)" }
+                td colspan="3" { (body.diameter) " km (42 / " (body.max_fields()) " fields)" }
             }
             tr {
                 td { "Coordinates" }
                 td colspan="3" {
-                    a href={ "/galaxy?body=" (body_id) "&galaxy=" (body.galaxy) "&system=" (body.system) } title="Go to galaxy" {
-                        (body.galaxy) "-" (body.system) "-" (body.position) "-P"
+                    a href={ "/galaxy?body=" (body_id) "&galaxy=" (body.coordinates.galaxy) "&system=" (body.coordinates.system) } title="Go to galaxy" {
+                        (body.coordinates)
                     }
                 }
             }

@@ -5,6 +5,7 @@ use diesel::dsl::{exists, select};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use num_traits::FromPrimitive;
 use uuid::Uuid;
 
 #[derive(Insertable)]
@@ -97,17 +98,30 @@ struct Body {
 
 impl From<Body> for model::Body {
     fn from(body: Body) -> model::Body {
+        let kind = FromPrimitive::from_i32(body.kind).unwrap();
+        let coordinates = model::Coordinates {
+            galaxy: body.galaxy,
+            system: body.system,
+            position: body.position,
+            kind,
+        };
+
+        let type_ = FromPrimitive::from_i32(body.type_).unwrap();
+
+        debug_assert!((kind == model::CoordinatesKind::Planet) == (type_ != model::BodyType::Moon));
+
         model::Body {
             id: body.id,
             user_id: body.user_id,
             name: body.name,
-            galaxy: body.galaxy,
-            system: body.system,
-            position: body.position,
-            kind: body.kind,
+            coordinates,
             metal: body.metal,
             crystal: body.crystal,
             deuterium: body.deuterium,
+            diameter: body.diameter,
+            temperature: body.temperature,
+            type_,
+            image: body.image,
         }
     }
 }

@@ -1,5 +1,8 @@
+use crate::model::{Coordinates, CoordinatesKind};
+use num_derive::{FromPrimitive, ToPrimitive};
 use rand::{random, thread_rng};
 use rand_distr::{Distribution, Normal};
+use std::fmt;
 use uuid::Uuid;
 
 pub const HOMEWORLD_METAL: f64 = 1000.0;
@@ -13,6 +16,7 @@ pub const COLONY_CRYSTAL: f64 = 500.0;
 #[allow(dead_code)]
 pub const COLONY_DEUTERIUM: f64 = 0.0;
 
+#[derive(Clone, Copy, Debug, PartialEq, FromPrimitive, ToPrimitive)]
 pub enum BodyType {
     Moon,
     Dry,
@@ -24,17 +28,47 @@ pub enum BodyType {
     Gas,
 }
 
+impl fmt::Display for BodyType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = format!("{:?}", self);
+        f.write_str(&s.to_ascii_uppercase())
+    }
+}
+
 pub struct Body {
     pub id: Uuid,
     pub user_id: Option<Uuid>,
     pub name: String,
-    pub galaxy: i32,
-    pub system: i32,
-    pub position: i32,
-    pub kind: i32,
+    pub coordinates: Coordinates,
     pub metal: f64,
     pub crystal: f64,
     pub deuterium: f64,
+    pub diameter: i32,
+    pub temperature: i32,
+    pub type_: BodyType,
+    pub image: i32,
+}
+
+impl Body {
+    fn planet_max_fields(&self) -> i32 {
+        // FIXME: Add support for terraformer.
+        debug_assert!(self.diameter > 0);
+        let x = self.diameter as f64 / 1000.0;
+        (x * x) as i32
+    }
+
+    fn moon_max_fields(&self) -> i32 {
+        // FIXME: Add support for lunar base.
+        1
+    }
+
+    pub fn max_fields(&self) -> i32 {
+        match self.coordinates.kind {
+            CoordinatesKind::Planet => self.planet_max_fields(),
+            CoordinatesKind::Moon => self.moon_max_fields(),
+            CoordinatesKind::DebrisField => unreachable!(),
+        }
+    }
 }
 
 #[allow(dead_code)]
