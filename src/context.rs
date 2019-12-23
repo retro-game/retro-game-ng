@@ -72,7 +72,7 @@ where
         self.service.borrow_mut().poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, req: ServiceRequest) -> Self::Future {
         let mut service = self.service.clone();
 
         Box::pin(async move {
