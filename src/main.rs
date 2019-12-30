@@ -61,6 +61,7 @@ async fn main() -> std::io::Result<()> {
             })
             .wrap(context::ContextTransform)
             .wrap(make_session_middleware())
+            .service(controller::buildings::get)
             .service(controller::create_homeworld::get)
             .service(controller::create_homeworld::post)
             .service(controller::home::get)
@@ -70,6 +71,6 @@ async fn main() -> std::io::Result<()> {
             .service(controller::sign_in::post)
     })
     .bind(format!("{}:{}", config.server.address, config.server.port))?
-    .start()
+    .run()
     .await
 }

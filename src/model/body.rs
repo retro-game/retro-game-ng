@@ -1,4 +1,5 @@
-use crate::model::{Coordinates, CoordinatesKind};
+use crate::model::{BuildingKind, Coordinates, CoordinatesKind};
+use enum_map::EnumMap;
 use num_derive::{FromPrimitive, ToPrimitive};
 use rand::{random, thread_rng};
 use rand_distr::{Distribution, Normal};
@@ -47,6 +48,7 @@ pub struct Body {
     pub temperature: i32,
     pub type_: BodyType,
     pub image: i32,
+    pub buildings: EnumMap<BuildingKind, i32>,
 }
 
 impl Body {

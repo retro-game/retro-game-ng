@@ -1,3 +1,4 @@
+pub mod buildings;
 pub mod create_homeworld;
 pub mod home;
 pub mod join;

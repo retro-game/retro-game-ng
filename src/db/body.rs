@@ -5,6 +5,7 @@ use diesel::dsl::{exists, select};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use enum_map::{Enum, EnumMap};
 use num_traits::FromPrimitive;
 use uuid::Uuid;
 
@@ -110,6 +111,15 @@ impl From<Body> for model::Body {
 
         debug_assert!((kind == model::CoordinatesKind::Planet) == (type_ != model::BodyType::Moon));
 
+        let buildings =
+            body.buildings
+                .into_iter()
+                .enumerate()
+                .fold(EnumMap::new(), |mut acc, (i, level)| {
+                    acc[Enum::<model::BuildingKind>::from_usize(i)] = level;
+                    acc
+                });
+
         model::Body {
             id: body.id,
             user_id: body.user_id,
@@ -122,6 +132,7 @@ impl From<Body> for model::Body {
             temperature: body.temperature,
             type_,
             image: body.image,
+            buildings,
         }
     }
 }
