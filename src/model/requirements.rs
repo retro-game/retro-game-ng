@@ -1,4 +1,4 @@
-use crate::model::{BuildingKind, TechnologyKind};
+use crate::model::{Body, BuildingKind, TechnologyKind};
 
 pub struct Requirements {
     pub buildings: &'static [(BuildingKind, i32)],
@@ -90,8 +90,18 @@ pub static BUILDING_REQUIREMENTS: &[Requirements] = &[
     },
 ];
 
-pub fn get_requirements(kind: BuildingKind) -> &'static Requirements {
+fn get_requirements(kind: BuildingKind) -> &'static Requirements {
     let index = kind as usize;
     debug_assert!(index < BUILDING_REQUIREMENTS.len());
     &BUILDING_REQUIREMENTS[index]
+}
+
+pub fn meets_requirements(body: &Body, kind: BuildingKind) -> bool {
+    let requirements = get_requirements(kind);
+    let buildings_ok = !requirements
+        .buildings
+        .iter()
+        .any(|&(kind, level)| body.buildings[kind] < level);
+    let technologies_ok = true; // TODO
+    buildings_ok && technologies_ok
 }

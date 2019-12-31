@@ -1,7 +1,7 @@
 use enum_map::Enum;
 use std::fmt;
 
-#[derive(Debug, Enum)]
+#[derive(Clone, Copy, Debug, Enum)]
 pub enum BuildingKind {
     MetalMine,
     CrystalMine,
