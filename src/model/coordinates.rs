@@ -19,6 +19,7 @@ impl fmt::Display for CoordinatesKind {
     }
 }
 
+#[derive(Clone)]
 pub struct Coordinates {
     pub galaxy: i32,
     pub system: i32,

@@ -1,4 +1,7 @@
+use crate::db::body;
 use crate::model::{meets_requirements, Body, BuildingKind, Resources};
+use crate::AppData;
+use actix_web::web;
 
 pub struct Building {
     pub kind: BuildingKind,
@@ -35,4 +38,10 @@ pub fn get_buildings_and_queue(body: &Body) -> BuildingsAndQueuePair {
         buildings,
         queue: (),
     }
+}
+
+pub fn build(app_data: web::Data<AppData>, mut body: Body, kind: BuildingKind) {
+    let conn = &app_data.db_pool.get().unwrap();
+    body.buildings[kind] += 1;
+    body::update_buildings_by_id(conn, &body.id, &body.buildings);
 }

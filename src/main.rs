@@ -61,6 +61,7 @@ async fn main() -> std::io::Result<()> {
             })
             .wrap(context::ContextTransform)
             .wrap(make_session_middleware())
+            .service(controller::buildings::build)
             .service(controller::buildings::get)
             .service(controller::create_homeworld::get)
             .service(controller::create_homeworld::post)

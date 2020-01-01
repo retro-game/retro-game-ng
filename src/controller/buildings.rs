@@ -1,9 +1,12 @@
 use crate::context::Context;
-use crate::controller::util::assure_body_access;
+use crate::controller::util::{assure_body_access, block};
+use crate::model::BuildingKind;
 use crate::service::buildings;
 use crate::view;
-use actix_web::web::Query;
-use actix_web::{get, HttpResponse, Result};
+use crate::AppData;
+use actix_web::http::header::LOCATION;
+use actix_web::web::{Data, Form, Query};
+use actix_web::{get, post, HttpResponse, Result};
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -22,4 +25,29 @@ pub async fn get(query: Query<BuildingsQuery>, context: Context) -> Result<HttpR
     let buildings_and_queue = buildings::get_buildings_and_queue(&body);
 
     Ok(HttpResponse::Ok().body(view::buildings(body_id, &buildings_and_queue)))
+}
+
+#[derive(Deserialize)]
+pub struct BuildForm {
+    pub body: Uuid,
+    pub kind: BuildingKind,
+}
+
+#[post("/buildings/build")]
+pub async fn build(
+    app_data: Data<AppData>,
+    form: Form<BuildForm>,
+    context: Context,
+) -> Result<HttpResponse> {
+    let bodies = context.bodies();
+    let body = bodies.get(&form.body).unwrap().clone();
+    let kind = form.kind;
+
+    block(move || buildings::build(app_data, body, kind)).await?;
+
+    let location = format!("/buildings?body={}", form.body);
+    let resp = HttpResponse::Found()
+        .header(LOCATION, location.as_str())
+        .finish();
+    Ok(resp)
 }

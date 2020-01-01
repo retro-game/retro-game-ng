@@ -155,3 +155,17 @@ pub fn find_homeworld_id_by_user_id(conn: &PgConnection, user_id: &Uuid) -> Opti
         .first(conn)
         .ok()
 }
+
+pub fn update_buildings_by_id(
+    conn: &PgConnection,
+    id: &Uuid,
+    buildings: &EnumMap<model::BuildingKind, i32>,
+) {
+    buildings.as_slice();
+    let res = diesel::update(bodies::table.filter(bodies::id.eq(id)))
+        .set(bodies::buildings.eq(buildings.as_slice()))
+        .returning(bodies::id)
+        .get_result::<Uuid>(conn)
+        .unwrap();
+    assert_eq!(res, *id);
+}

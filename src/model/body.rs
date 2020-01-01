@@ -36,6 +36,7 @@ impl fmt::Display for BodyType {
     }
 }
 
+#[derive(Clone)]
 pub struct Body {
     pub id: Uuid,
     pub user_id: Option<Uuid>,

@@ -13,7 +13,7 @@ pub fn buildings(body_id: Uuid, buildings_and_queue: &BuildingsAndQueuePair) -> 
                 tr class="item" {
                     td class="item-image" {
                         a href={ "/details/building?body=" (body_id) "&kind=" (b.kind) } {
-                            img src={ "/static/skins/EpicBlue/items/" (b.kind) ".gif" };
+                            img src={ "/static/skins/EpicBlue/items/" (b.kind.image_id()) ".gif" };
                         }
                     }
                     td class="item-info" {
@@ -55,10 +55,10 @@ pub fn buildings(body_id: Uuid, buildings_and_queue: &BuildingsAndQueuePair) -> 
                         }
                     }
                     td class="item-actions" {
-                        form action="/buildings/construct" method="post" {
+                        form action="/buildings/build" method="post" {
                             input name="body" type="hidden" value={ (body_id) };
                             input name="kind" type="hidden" value={ (b.kind) };
-                            button { "Construct" }
+                            button { "Build" }
                         }
                     }
                 }
