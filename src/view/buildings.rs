@@ -1,9 +1,14 @@
+use crate::context::Context;
 use crate::service::buildings::BuildingsAndQueuePair;
 use crate::view::layout;
 use maud::html;
 use uuid::Uuid;
 
-pub fn buildings(body_id: Uuid, buildings_and_queue: &BuildingsAndQueuePair) -> String {
+pub fn buildings(
+    context: &Context,
+    body_id: Uuid,
+    buildings_and_queue: &BuildingsAndQueuePair,
+) -> String {
     let markup = html! {
         table {
             tr {
@@ -65,5 +70,5 @@ pub fn buildings(body_id: Uuid, buildings_and_queue: &BuildingsAndQueuePair) -> 
             }
         }
     };
-    layout(markup).into()
+    layout(context, body_id, markup).into()
 }

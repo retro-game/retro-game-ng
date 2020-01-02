@@ -1,6 +1,9 @@
+use crate::context::Context;
+use crate::model::Body;
 use maud::{html, Markup, DOCTYPE};
+use uuid::Uuid;
 
-fn top_bar() -> Markup {
+fn top_bar(context: &Context, body: &Body) -> Markup {
     html! {
         div id="top-bar" {
             div id="top-bar-bodies" {
@@ -8,7 +11,14 @@ fn top_bar() -> Markup {
                 div {
                     form id="top-bar-body-list" {
                         select name="body" {
-                            option { "Test [1:2:3:P]" }
+                            @for (id, b) in context.bodies().iter() {
+                                option value=(id) selected?[id == &body.id] {
+                                    (b.name)
+                                    " ["
+                                    (b.coordinates)
+                                    "]"
+                                }
+                            }
                         }
                     }
                     div id="top-bar-body-pointers" {
@@ -27,17 +37,17 @@ fn top_bar() -> Markup {
                 div {
                     img src="/static/skins/EpicBlue/resources/METAL.gif";
                     p { "Metal" }
-                    p { "123" }
+                    p { (body.metal) }
                 }
                 div {
                     img src="/static/skins/EpicBlue/resources/CRYSTAL.gif";
                     p { "Crystal" }
-                    p { "123" }
+                    p { (body.crystal) }
                 }
                 div {
                     img src="/static/skins/EpicBlue/resources/DEUTERIUM.gif";
                     p { "Deuterium" }
-                    p { "123" }
+                    p { (body.deuterium) }
                 }
                 div {
                     img src="/static/skins/EpicBlue/resources/ENERGY.gif";
@@ -49,48 +59,52 @@ fn top_bar() -> Markup {
     }
 }
 
-fn sidebar() -> Markup {
+fn sidebar(body: &Body) -> Markup {
+    let body_id = body.id;
+    let c = &body.coordinates;
     html! {
         nav id="sidebar" {
             h2 {
                 a href="https://github.com/retro-game/retro-game-ng" { "Retro Game NG" }
                 " "
-                a href="/changelog?body=TODO" { "v0.1" }
+                a href={"/changelog?body=" (body_id) } { "v0.1" }
             }
             ul {
                 li {
-                    a href="/overview?body=TODO" { "Overview" }
+                    a href={ "/overview?body=" (body_id) } { "Overview" }
                 }
                 li {
-                    a href="/flights?body=TODO" { "Flights" }
+                    a href={ "/flights?body=" (body_id) } { "Flights" }
                 }
                 li {
-                    a href="/flights/send?body=TODO" { "Send fleet" }
+                    a href={ "/flights/send?body=" (body_id) } { "Send fleet" }
                 }
                 li {
-                    a href="/resources?body=TODO" { "Resources" }
+                    a href={ "/resources?body=" (body_id) } { "Resources" }
                 }
                 li {
-                    a href="/buildings?body=TODO" { "Buildings" }
+                    a href={ "/buildings?body=" (body_id) } { "Buildings" }
                 }
                 li {
-                    a href="/technologies?body=TODO" { "Technologies" }
+                    a href={ "/technologies?body=" (body_id) } { "Technologies" }
                 }
                 li {
-                    a href="/shipyard?body=TODO&type=FLEET" { "Shipyard" }
+                    a href={ "/shipyard?body=" (body_id) "&type=FLEET" } { "Shipyard" }
                 }
                 li {
-                    a href="/shipyard?body=TODO&type=DEFENSE" { "Defense" }
+                    a href={ "/shipyard?body=" (body_id) "&type=DEFENSE" } { "Defense" }
                 }
                 li {
-                    a href="/galaxy?body=TODO" { "Galaxy" }
+                    a href={ "/galaxy?body=" (body_id) "&galaxy=" (c.galaxy) "&system=" (c.system) } { "Galaxy" }
                 }
             }
         }
     }
 }
 
-pub fn layout(content: Markup) -> Markup {
+pub fn layout(context: &Context, body_id: Uuid, content: Markup) -> Markup {
+    let bodies = context.bodies();
+    let body = bodies.get(&body_id).unwrap();
     html! {
         (DOCTYPE)
         head {
@@ -102,11 +116,11 @@ pub fn layout(content: Markup) -> Markup {
             div.container {
                 div {
                     div {
-                        (top_bar())
+                        (top_bar(context, body))
                         div { (content) }
                     }
                 }
-                (sidebar())
+                (sidebar(body))
             }
         }
     }

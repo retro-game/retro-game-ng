@@ -24,7 +24,7 @@ pub async fn get(query: Query<BuildingsQuery>, context: Context) -> Result<HttpR
     let body = bodies.get(&body_id).unwrap();
     let buildings_and_queue = buildings::get_buildings_and_queue(&body);
 
-    Ok(HttpResponse::Ok().body(view::buildings(body_id, &buildings_and_queue)))
+    Ok(HttpResponse::Ok().body(view::buildings(&context, body_id, &buildings_and_queue)))
 }
 
 #[derive(Deserialize)]

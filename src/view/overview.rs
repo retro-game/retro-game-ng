@@ -78,5 +78,5 @@ pub fn overview(context: &Context, body_id: Uuid) -> String {
             }
         }
     };
-    layout(markup).into()
+    layout(context, body_id, markup).into()
 }
