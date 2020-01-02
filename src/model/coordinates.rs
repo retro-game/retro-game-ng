@@ -31,7 +31,7 @@ impl fmt::Display for Coordinates {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}-{}-{}-{}",
+            "{}:{}:{}-{}",
             self.galaxy, self.system, self.position, self.kind
         )
     }
