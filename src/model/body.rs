@@ -54,15 +54,15 @@ pub struct Body {
 
 impl Body {
     fn planet_max_fields(&self) -> i32 {
-        // FIXME: Add support for terraformer.
         debug_assert!(self.diameter > 0);
         let x = self.diameter as f64 / 1000.0;
-        (x * x) as i32
+        let terraformer_level = self.buildings[BuildingKind::Terraformer];
+        (x * x) as i32 + terraformer_level * 6
     }
 
     fn moon_max_fields(&self) -> i32 {
-        // FIXME: Add support for lunar base.
-        1
+        let lunar_base_level = self.buildings[BuildingKind::LunarBase];
+        1 + lunar_base_level * 3
     }
 
     pub fn max_fields(&self) -> i32 {
