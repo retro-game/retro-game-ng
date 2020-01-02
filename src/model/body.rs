@@ -72,6 +72,10 @@ impl Body {
             CoordinatesKind::DebrisField => unreachable!(),
         }
     }
+
+    pub fn used_fields(&self) -> i32 {
+        self.buildings.values().sum()
+    }
 }
 
 #[allow(dead_code)]

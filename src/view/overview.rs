@@ -62,7 +62,7 @@ pub fn overview(context: &Context, body_id: Uuid) -> String {
             }
             tr {
                 td { "Diameter" }
-                td colspan="3" { (body.diameter) " km (42 / " (body.max_fields()) " fields)" }
+                td colspan="3" { (body.diameter) " km (" (body.used_fields()) " / " (body.max_fields()) " fields)" }
             }
             tr {
                 td { "Coordinates" }
