@@ -4,6 +4,7 @@ use maud::{html, Markup, DOCTYPE};
 use uuid::Uuid;
 
 fn top_bar(context: &Context, body: &Body) -> Markup {
+    let prod = body.get_production();
     html! {
         div id="top-bar" {
             div id="top-bar-bodies" {
@@ -34,25 +35,28 @@ fn top_bar(context: &Context, body: &Body) -> Markup {
                 }
             }
             div id="top-bar-resources" {
-                div {
+                @let total = &prod.total_prod;
+                @let make_res_tooltip = |prod| format!("<p>Production: <strong>{}</strong></p>", prod);
+                div data-tooltip? data-tooltip-html? data-tooltip-title={ (make_res_tooltip(total.metal)) } {
                     img src="/static/skins/EpicBlue/resources/METAL.gif";
                     p { "Metal" }
                     p { (body.metal) }
                 }
-                div {
+                div data-tooltip? data-tooltip-html? data-tooltip-title={ (make_res_tooltip(total.crystal)) } {
                     img src="/static/skins/EpicBlue/resources/CRYSTAL.gif";
                     p { "Crystal" }
                     p { (body.crystal) }
                 }
-                div {
+                div data-tooltip? data-tooltip-html? data-tooltip-title={ (make_res_tooltip(total.deuterium)) } {
                     img src="/static/skins/EpicBlue/resources/DEUTERIUM.gif";
                     p { "Deuterium" }
                     p { (body.deuterium) }
                 }
-                div {
+                @let balance = &prod.energy_balance;
+                div data-tooltip? data-tooltip-html? data-tooltip-title={ "<p>Required energy: <strong>" (balance.used) "</strong></p>" } {
                     img src="/static/skins/EpicBlue/resources/ENERGY.gif";
                     p { "Energy" }
-                    p { "123 / 123" }
+                    p { (balance.available) " / " (balance.total()) }
                 }
             }
         }
@@ -111,6 +115,10 @@ pub fn layout(context: &Context, body_id: Uuid, content: Markup) -> Markup {
             meta charset="utf-8";
             title { "Retro Game" }
             link href="/static/skins/EpicBlue/style.css" rel="stylesheet";
+            script src="/static/js/jquery-3.3.1.min.js" {}
+            script src="/static/js/popper-1.14.4.min.js" {}
+            script src="/static/js/tooltip-1.3.0.min.js" {}
+            script src="/static/js/retrogame.js" {}
         }
         body {
             div.container {
